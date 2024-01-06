@@ -1,0 +1,181 @@
+@font-face {
+  font-family: 'Nunito';
+  src: url('../../fonts/Nunito-Regular.ttf');
+}
+
+:root {
+  --border-radius: 5px;
+  --transition: all 0.15s ease-in-out;
+  --font-family: 'Nunito', sans-serif;
+
+  --blue: #38b6ff;
+  --blue-light: #4fc3ff;
+  --orange: #ffbd59;
+
+  --grey: #9e9e9e;
+  --grey-dark: #424242;
+  --black-light: #333333;
+  --grey-light: #e0e0e0;
+  --black: #1B1B1B;
+
+  --white: #ffffff;
+}
+
+::-webkit-scrollbar {
+  width: 0.5em;
+  cursor: pointer;
+}
+
+::-webkit-scrollbar-track {
+  background-color: var(--grey-light);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--blue);
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: var(--font-family);
+  background-color: var(--black);
+  transition: 0.5s;
+}
+
+.container {
+  width: 100%;
+  height: 100vh;
+  max-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+
+  .alert{
+    z-index: 2;
+  }
+
+  .buttonConnect {
+    background-color: var(--blue);
+    border: none;
+    border-radius: 5px;
+    padding: .4em 1em;
+    color: var(--white);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 2em;
+    transition: all .2s ease-in-out;
+    z-index: 10;
+  }
+
+  .buttonConnect:hover {
+    box-shadow: 0 0 0 .3em rgba(56, 182, 255, 0.5);
+  }
+
+  .title {
+    z-index: 2;
+      h2 {
+      margin: 0;
+      margin-bottom: 1rem;
+      color: var(--white);
+      font-size: 1.5rem;
+      font-weight: 100;
+      color: var(--blue);
+      z-index: 2;
+    }
+  }
+
+  h4, h6 {
+    position: absolute;
+    bottom: 2%;
+    font-size: 1rem;
+    color: var(--grey);
+    margin-bottom: 2rem;
+    font-weight: 1;
+    z-index: 2;
+
+    span {
+      color: var(--orange);
+    }
+  }
+
+  h6 {
+    font-size: 0.8rem;
+    color: var(--blue);
+    margin-bottom: 1rem;
+    user-select: none;
+    z-index: 2;
+  }
+
+  .animation,
+  .testAnim {
+    position: fixed;
+    margin: 0 auto;
+    width: 98%;
+    height: 100em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    span {
+      opacity: 0;
+      position: absolute;
+      margin-top: 40%;
+      box-sizing: border-box;
+      border: .2em solid var(--black-light);
+      border-radius: 50%;
+      animation: animate 10s ease-out infinite;
+      animation-delay: calc(2s * var(--i));
+    }
+
+    img {
+      width: 3.5em;
+      position: fixed;
+      bottom: 10%;
+      user-select: none;
+      z-index: 2;
+      animation: animate-logo 2s ease-out infinite;
+    }
+  }
+
+  .devices {
+    width: 80%;
+    height: 80%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+  }
+}
+
+@keyframes animate-logo {
+  0% {
+    transform: scale(0.8);
+  }
+  50% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(0.8);
+  }
+}
+
+@keyframes animate {
+  from {
+    width: 0;
+    height: 0;
+    opacity: 1;
+  }
+  to {
+    width: 100em;
+    height: 100em;
+    opacity: 0;
+  }
+}

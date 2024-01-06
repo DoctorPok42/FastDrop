@@ -1,0 +1,127 @@
+.popupDownload {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 15;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .popupContainer {
+        background-color: rgba(66, 66, 66, 0.5);
+        border-radius: 20px;
+        padding: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .popupContent {
+            width: 30em;
+            min-height: 12em;
+            background-color: var(--grey-dark);
+            border-radius: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            position: relative;
+
+            .popupTitle {
+                width: 80%;
+                margin-top: 1.5em;
+
+                h1 {
+                    margin: 0;
+                    font-size: 1.35em;
+                    color: var(--white);
+                    text-align: center;
+
+                    span {
+                        color: var(--orange);
+                    }
+                }
+            }
+
+            .popupFile {
+                width: 90%;
+                margin-top: 1em;
+
+                h2 {
+                    margin: 0;
+                    font-size: 1.2em;
+                    color: var(--white);
+                    text-align: center;
+                }
+
+                .popupFileTextarea {
+                    width: 90%;
+                    height: 10em;
+                    padding: .5em 1em;
+                    border-radius: 5px;
+                    font-size: 1.2em;
+                    color: var(--grey-dark);
+                    font-weight: 600;
+                    outline: none;
+                    resize: none;
+                    text-decoration: none;
+                }
+            }
+
+            .previewUrl {
+                width: 80%;
+                height: 10em;
+                padding-bottom: 2.5em;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin-top: -2em;
+
+                img {
+                    width: auto;
+                    height: 40%;
+                    object-fit: contain;
+                }
+            }
+
+            .popupButtons {
+                width: 80%;
+                height: 5em;
+                display: flex;
+                justify-content: space-evenly;
+                align-items: center;
+                padding: .25rem 0;
+
+                .btnDecline,
+                .btnAccept {
+                    padding: .5em 1.2em;
+                    border-radius: 5px;
+                    border: none;
+                    background-color: var(--blue);
+                    box-shadow: 0 5px 0 0 rgba(56, 182, 255, 0.5);
+                    cursor: pointer;
+                    color: var(--white);
+                    font-size: 1.2em;
+                    font-weight: 600;
+                    transition: all .2s ease-in-out;
+                }
+
+                .btnAccept {
+                    background-color: var(--orange);
+                    box-shadow: 0 5px 0 0 rgba(255, 188, 87, 0.5);
+                }
+
+                .btnDecline:hover {
+                    box-shadow: 0 0px 0 0 rgba(56, 182, 255, 0.5);
+                    transform: translateY(5px);
+                }
+
+                .btnAccept:hover {
+                    box-shadow: 0 0px 0 0 rgba(255, 188, 87, 0.5);
+                    transform: translateY(5px);
+                }
+            }
+        }
+    }
+}
