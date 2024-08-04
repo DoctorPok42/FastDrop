@@ -24,8 +24,8 @@ const Device = ({
     handleSendText,
     handleUrlUpload,
 }: DeviceProps) => {
+  const [showPopup, setShowPopup] = useState(false);
     if (device.userName === myName) return null;
-    const [showPopup, setShowPopup] = useState(false);
 
     const NameTooltip = styled(({ className, ...props }: any) => (
         <Tooltip {...props} classes={{ popper: className }} />

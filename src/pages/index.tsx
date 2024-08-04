@@ -68,7 +68,7 @@ const Home = () => {
     setUsername(userName);
 
     var userList = [] as any[];
-    const newSocket = io("http://localhost:3001", { secure: true, transports: ["websocket"] });
+    const newSocket = io("https://fastdrop-server.doctorpok.io/", { secure: true, transports: ["websocket"] });
     setMySocket(newSocket);
 
     const user = {
