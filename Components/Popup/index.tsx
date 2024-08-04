@@ -3,6 +3,7 @@ import { IconButton } from '@mui/material';
 import { Close } from '@mui/icons-material/';
 import FileUpload from '../FileUpload';
 import TextInterface from '../TextInterface';
+import { useClickAway } from "@uidotdev/usehooks";
 
 import styles from './styles.module.scss'
 
@@ -26,11 +27,15 @@ const Popup = ({
     const [isTextOpen, setIsTextOpen] = useState(false);
     const [isLinkOpen, setIsLinkOpen] = useState(false);
 
+  const ref = useClickAway(() => {
+    onClose();
+  }) as React.MutableRefObject<HTMLDivElement>;
+
     return (
         <div className={styles.popup} style={{
                 visibility: showPopup ? 'visible' : 'hidden',
         }}>
-            <div className={styles.popup__content} style={{
+            <div ref={ref} className={styles.popup__content} style={{
                 transform: showPopup ? 'scale(1)' : 'scale(0)',
                 visibility: showPopup ? 'visible' : 'hidden',
             }}>
