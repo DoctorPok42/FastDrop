@@ -7,6 +7,7 @@ const io = new Server(httpServer, {
     origin: 'http://localhost:3001',
     methods: ['GET', 'POST'],
   },
+  maxHttpBufferSize: 1e8,
 });
 
 const port = 3001;
