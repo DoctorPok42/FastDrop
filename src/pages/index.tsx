@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Head from 'next/head'
 import Script from 'next/script';
 import io from 'socket.io-client';
@@ -7,6 +7,7 @@ import { Device, PopupDownload, RadioButton } from '../../Components';
 import { uniqueNamesGenerator, Config, adjectives, animals } from 'unique-names-generator';
 import { getDeviceType, handleUpload, askForLocationPermission } from '../functions';
 import { handleDownloadFile, handleGetUrl, handleDeclineFile } from '../functions/handle';
+import { IncomingFile } from '@/types/file';
 
 const customConfig: Config = {
   dictionaries: [adjectives, animals],
@@ -23,6 +24,7 @@ const Home = () => {
   const [popupType, setPopupType] = useState<'file' | 'txt' | 'url' | 'none'>('none')
 
   const [filesToDownload, setFilesToDownload] = useState<any[]>([]);
+  const incomingFilesRef = useRef<{ [fileId: string]: IncomingFile }>({});
   const [text, setText] = useState<string>('');
   const [url, setUrl] = useState<string>('');
   const [userNameSender, setUserNameSender] = useState<string>('');
@@ -32,6 +34,7 @@ const Home = () => {
   const [privacyLevel, setPrivacyLevel] = useState<string>('1');
 
   const [error, setError] = useState<string | null>(null);
+  const [status, setStatus] = useState<number>(-1);
 
   useEffect(() => {
     if (privacyLevel === '1') {
@@ -63,12 +66,12 @@ const Home = () => {
   }, [privacyLevel]);
 
   const connectToSocket = () => {
-    var userName;
+    let userName;
     userName = uniqueNamesGenerator(customConfig);
     setUsername(userName);
 
-    var userList = [] as any[];
     const newSocket = io("https://fastdrop-server.doctorpok.io/", { secure: true, transports: ["websocket"] });
+    let userList = [] as any[];
     setMySocket(newSocket);
 
     const user = {
@@ -107,7 +110,7 @@ const Home = () => {
     newSocket.on('fileDownloadLarge', async (file: any,  username: string) => {
       setUserNameSender(username);
 
-      var allFile = [] as any[];
+      let allFile = [] as any[];
 
       file.map((f: any) => {
         const putFiles = new File([f.file], f.fileName);
@@ -142,6 +145,82 @@ const Home = () => {
       setShowPopupDownload(true);
       setPopupType('file');
     });
+
+    newSocket.on("fileDownloadChunk", (data) => {
+      const { fileId, chunk, currentChunk, totalChunks, fileName, username, sender } = data;
+
+      if (!incomingFilesRef.current[fileId]) {
+        incomingFilesRef.current[fileId] = {
+          chunks: new Array(totalChunks),
+          totalChunks,
+          fileName,
+          username,
+        };
+      }
+
+      const arrayBuffer =
+        chunk instanceof ArrayBuffer ? chunk : new Uint8Array(chunk).buffer;
+
+      incomingFilesRef.current[fileId].chunks[currentChunk] = arrayBuffer;
+
+      newSocket.emit("fileDownloadChunkStatus", {
+        currentChunk,
+        totalChunks,
+        userToRespond: sender,
+      });
+      setStatus(Math.floor(((currentChunk + 1) / totalChunks) * 100));
+    });
+
+    newSocket.on("fileDownloadChunkStatusAlert", (data) => {
+      const { currentChunk, totalChunks } = data;
+      setStatus(Math.floor(((currentChunk + 1) / totalChunks) * 100));
+    });
+
+    newSocket.on("fileDownloadEnd", (data) => {
+      const { fileId, fileName, username, sender } = data;
+      setUserNameSender(username);
+      const fileData = incomingFilesRef.current[fileId];
+      if (!fileData) return;
+
+      const blob = new Blob(fileData.chunks);
+      const url = URL.createObjectURL(blob);
+
+      setFilesToDownload([
+        {
+          fileName: fileName,
+          file: new File([blob], fileName),
+          checked: true,
+        },
+      ]);
+
+      const fileExtension = fileName.split('.').pop();
+      if (fileExtension === 'png' || fileExtension === 'jpg' || fileExtension === 'jpeg') {
+        setPreviewUrl(url);
+      } else {
+        setPreviewUrl(null);
+      }
+      setShowPopupDownload(true);
+      setPopupType('file');
+
+      setStatus(200);
+      setTimeout(() => {
+        setStatus(-1);
+      }, 3000);
+
+      delete incomingFilesRef.current[fileId];
+
+      newSocket.emit('fileDownloadEnd', {
+        fileId,
+        userToRespond: sender,
+      });
+    });
+
+    newSocket.on('fileDownloadEndAlert', (data) => {
+      setStatus(200);
+      setTimeout(() => {
+        setStatus(-1);
+      }, 3000);
+    })
 
     newSocket.on('textDownload', async (text: string, username: string) => {
       setUserNameSender(username);
@@ -184,6 +263,14 @@ const Home = () => {
           </Alert>
         }
 
+        {status !== -1 &&
+          <Alert className='status' severity={
+            status === 200 ? 'success' : "info"
+          }>
+            {status !== 200 ? `File transfering... (${status} %)` : 'File transfered successfully!'}
+          </Alert>
+        }
+
         <RadioButton value={privacyLevel} onChange={(e) => setPrivacyLevel(e)} />
         <div>
           {!connected && <button className='buttonConnect' onClick={() => connectToSocket()} onLoad={() =>  {
@@ -213,9 +300,10 @@ const Home = () => {
                 key={device.socketId}
                 device={device}
                 myName={username}
-                handleSendText={(text: string) => handleUpload(mySocket, 'txt', username, device.socketId, undefined, text)}
-                handleFileUpload={(files: File[]) => handleUpload(mySocket, 'file', username, device.socketId, files)}
-                handleUrlUpload={(url: string) => handleUpload(mySocket, 'url', username, device.socketId, undefined, undefined, url)}
+                handleSendText={(text: string) => handleUpload(mySocket, 'txt', username, device.socketId, setStatus, undefined, text)}
+                handleFileUpload={(files: File[]) => handleUpload(mySocket, 'file', username, device.socketId, setStatus, files)}
+                handleUrlUpload={(url: string) => handleUpload(mySocket, 'url', username, device.socketId, setStatus, undefined, undefined, url)}
+                status={status}
               />
             ))}
           </div>
