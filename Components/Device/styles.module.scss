@@ -1,32 +1,47 @@
 .device {
-    width: 5rem;
-    height: 5rem;
-    background-color: var(--blue);
+  width: 5rem;
+  height: 5rem;
+  background-color: var(--blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.15s ease-in-out;
+  margin: 0 1rem;
+  cursor: pointer;
+  position: relative;
+
+  .progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .device__icon {
+    width: 100%;
     display: flex;
     align-items: center;
+    margin: 0;
+    padding: 0;
     justify-content: center;
-    border-radius: 50%;
-    transition: all 0.15s ease-in-out;
-    margin: 0 1rem;
-    cursor: pointer;
 
-    .device__icon {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        margin: 0;
-        padding: 0;
-        justify-content: center;
-
-        .icon {
-            width: 50%;
-            margin: 0;
-            padding: 0;
-            color: var(--white);
-        }
+    .icon {
+      width: 50%;
+      margin: 0;
+      padding: 0;
+      color: var(--white);
     }
+  }
 }
 
-// .device:hover {
-//     transform: scale(1.1);
-// }
+@property --progress-value {
+  syntax: "<integer>";
+  initial-value: 0;
+  inherits: false;
+}
+
+@keyframes progress {
+  to {
+    --progress-value: 75;
+  }
+}

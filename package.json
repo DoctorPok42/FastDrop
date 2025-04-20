@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 6200",
     "start-server": "node ./src/socket-server/server.mjs",
     "lint": "next lint"
   },
@@ -32,6 +32,7 @@
     "nodescan": "^0.7.1",
     "npm": "^10.2.3",
     "react": "^18.2.0",
+    "react-circular-progressbar": "^2.2.0",
     "react-dropzone": "^14.2.3",
     "react-select": "^5.7.5",
     "sass": "^1.62.1",

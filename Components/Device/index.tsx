@@ -1,28 +1,31 @@
 import { useState } from 'react';
 import Popup from '../Popup';
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLaptop, faMobileScreenButton } from '@fortawesome/free-solid-svg-icons';
 import { IconButton, Zoom } from '@mui/material';
 import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
 import { styled } from '@mui/material/styles';
+import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
 
 import styles from './styles.module.scss'
 
 interface DeviceProps {
-    device: any
-    myName: string
-    handleFileUpload: any
-    handleSendText: (text: string) => void
-    handleUrlUpload: (url: string) => void
+  device: any
+  myName: string
+  handleFileUpload: any
+  handleSendText: (text: string) => void
+  handleUrlUpload: (url: string) => void
+  status: number
 }
 
 const Device = ({
-    device,
-    myName,
-    handleFileUpload,
-    handleSendText,
-    handleUrlUpload,
+  device,
+  myName,
+  handleFileUpload,
+  handleSendText,
+  handleUrlUpload,
+  status,
 }: DeviceProps) => {
   const [showPopup, setShowPopup] = useState(false);
     if (device.userName === myName) return null;
@@ -49,6 +52,15 @@ const Device = ({
 
     return (
         <div className={styles.device}>
+          <div className={styles.progress}>
+            <CircularProgressbar value={status} maxValue={100} styles={buildStyles({
+              pathColor: 'var(--orange)',
+              trailColor: 'var(--blue)',
+              strokeLinecap: 'round',
+              backgroundColor: 'var(--black)',
+              pathTransitionDuration: 0.5,
+            })} />
+          </div>
             <div className={styles.device__icon}>
                 <NameTooltip
                     title={device.userName}

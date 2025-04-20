@@ -27,8 +27,14 @@ const Popup = ({
     const [isTextOpen, setIsTextOpen] = useState(false);
     const [isLinkOpen, setIsLinkOpen] = useState(false);
 
+  const handleClose = () => {
+      onClose();
+      setIsTextOpen(false);
+      setIsLinkOpen(false);
+  }
+
   const ref = useClickAway(() => {
-    onClose();
+    handleClose();
   }) as React.MutableRefObject<HTMLDivElement>;
 
     return (
@@ -42,7 +48,7 @@ const Popup = ({
                 <div className={styles.popup_cont}>
                 <div className={styles.popupLink__close}>
                     <IconButton>
-                        <Close onClick={() => onClose()} style={{
+                        <Close onClick={handleClose} style={{
                             color: 'var(--white)',
                             fontSize: '1.5rem',
                         }} />
