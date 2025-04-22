@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Head from 'next/head'
 import Script from 'next/script';
 import io from 'socket.io-client';
@@ -7,6 +7,7 @@ import { Device, PopupDownload, RadioButton } from '../../Components';
 import { uniqueNamesGenerator, Config, adjectives, animals } from 'unique-names-generator';
 import { getDeviceType, handleUpload, askForLocationPermission } from '../functions';
 import { handleDownloadFile, handleGetUrl, handleDeclineFile } from '../functions/handle';
+import { IncomingFile } from '@/types/file';
 
 const customConfig: Config = {
   dictionaries: [adjectives, animals],
@@ -15,7 +16,7 @@ const customConfig: Config = {
 
 const Home = () => {
   const [users, setUsers] = useState([] as any[]);
-  const [username, setUsername] = useState<string>('');
+  const [myUsername, setMyUsername] = useState<string>('');
   const [connected, setConnected] = useState(false);
   const [mySocket, setMySocket] = useState<any>(null);
 
@@ -23,20 +24,22 @@ const Home = () => {
   const [popupType, setPopupType] = useState<'file' | 'txt' | 'url' | 'none'>('none')
 
   const [filesToDownload, setFilesToDownload] = useState<any[]>([]);
+  const incomingFilesRef = useRef<{ [fileId: string]: IncomingFile }>({});
   const [text, setText] = useState<string>('');
   const [url, setUrl] = useState<string>('');
-  const [userNameSender, setUserNameSender] = useState<string>('');
+  const [userNameSender, setUserNameSender] = useState<[string, string]>(['', '']);
 
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const [privacyLevel, setPrivacyLevel] = useState<string>('1');
 
   const [error, setError] = useState<string | null>(null);
+  const [status, setStatus] = useState<number>(-1);
 
   useEffect(() => {
     if (privacyLevel === '1') {
       mySocket && mySocket.emit('updatePrivacyLevel', {
-        name: username,
+        name: myUsername,
         deviceType: getDeviceType(),
         privacyLevel: privacyLevel,
         location: null,
@@ -45,7 +48,7 @@ const Home = () => {
     if (privacyLevel === '2') {
       askForLocationPermission(
         mySocket,
-        username,
+        myUsername,
         privacyLevel,
         setError,
         setPrivacyLevel,
@@ -54,7 +57,7 @@ const Home = () => {
     }
     if (privacyLevel === '3') {
       mySocket && mySocket.emit('updatePrivacyLevel', {
-        name: username,
+        name: myUsername,
         deviceType: getDeviceType(),
         privacyLevel: privacyLevel,
         location: null,
@@ -63,12 +66,12 @@ const Home = () => {
   }, [privacyLevel]);
 
   const connectToSocket = () => {
-    var userName;
+    let userName;
     userName = uniqueNamesGenerator(customConfig);
-    setUsername(userName);
+    setMyUsername(userName);
 
-    var userList = [] as any[];
     const newSocket = io("https://fastdrop-server.doctorpok.io/", { secure: true, transports: ["websocket"] });
+    let userList = [] as any[];
     setMySocket(newSocket);
 
     const user = {
@@ -105,9 +108,9 @@ const Home = () => {
     });
 
     newSocket.on('fileDownloadLarge', async (file: any,  username: string) => {
-      setUserNameSender(username);
+      setUserNameSender([username, myUsername]);
 
-      var allFile = [] as any[];
+      let allFile = [] as any[];
 
       file.map((f: any) => {
         const putFiles = new File([f.file], f.fileName);
@@ -124,7 +127,7 @@ const Home = () => {
     });
 
     newSocket.on('fileDownload', async (file: any, fileName: string, username: string) => {
-      setUserNameSender(username);
+      setUserNameSender([username, myUsername]);
       const putFile = new File([file], fileName);
       setFilesToDownload([
         {
@@ -143,15 +146,96 @@ const Home = () => {
       setPopupType('file');
     });
 
-    newSocket.on('textDownload', async (text: string, username: string) => {
+    newSocket.on("fileDownloadChunk", (data) => {
+      const { fileId, chunk, currentChunk, totalChunks, fileName, username, sender } = data;
+      setUserNameSender([username, myUsername]);
+
+      if (!incomingFilesRef.current[fileId]) {
+        incomingFilesRef.current[fileId] = {
+          chunks: new Array(totalChunks),
+          totalChunks,
+          fileName,
+          username,
+        };
+      }
+
+      const arrayBuffer =
+        chunk instanceof ArrayBuffer ? chunk : new Uint8Array(chunk).buffer;
+
+      incomingFilesRef.current[fileId].chunks[currentChunk] = arrayBuffer;
+
+      newSocket.emit("fileDownloadChunkStatus", {
+        currentChunk,
+        totalChunks,
+        userToRespond: sender,
+      });
+      setStatus(Math.floor(((currentChunk + 1) / totalChunks) * 100));
+    });
+
+    newSocket.on("fileDownloadChunkStatusAlert", (data) => {
+      const { currentChunk, totalChunks, senderUsername } = data;
+      setStatus(Math.floor(((currentChunk + 1) / totalChunks) * 100));
+      setUserNameSender([senderUsername, myUsername]);
+    });
+
+    newSocket.on("fileDownloadEnd", (data) => {
+      const { fileId, fileName, username, sender } = data;
       setUserNameSender(username);
+      const fileData = incomingFilesRef.current[fileId];
+      if (!fileData) return;
+
+      const blob = new Blob(fileData.chunks);
+      const url = URL.createObjectURL(blob);
+
+      setFilesToDownload([
+        {
+          fileName: fileName,
+          file: new File([blob], fileName),
+          checked: true,
+        },
+      ]);
+
+      const fileExtension = fileName.split('.').pop();
+      if (fileExtension === 'png' || fileExtension === 'jpg' || fileExtension === 'jpeg') {
+        setPreviewUrl(url);
+      } else {
+        setPreviewUrl(null);
+      }
+      setShowPopupDownload(true);
+      setPopupType('file');
+
+      setStatus(200);
+      setTimeout(() => {
+        setStatus(-1);
+      }, 3000);
+
+      delete incomingFilesRef.current[fileId];
+
+      newSocket.emit('fileDownloadEnd', {
+        fileId,
+        userToRespond: sender,
+      });
+
+      setUserNameSender(['', '']);
+      setFilesToDownload([]);
+    });
+
+    newSocket.on('fileDownloadEndAlert', (data) => {
+      setStatus(200);
+      setTimeout(() => {
+        setStatus(-1);
+      }, 3000);
+    })
+
+    newSocket.on('textDownload', async (text: string, username: string) => {
+      setUserNameSender([username, myUsername]);
       setText(text);
       setShowPopupDownload(true);
       setPopupType('txt');
     });
 
     newSocket.on('urlDownload', async (url: string, username: string) => {
-      setUserNameSender(username);
+      setUserNameSender([username, myUsername]);
       setUrl(url);
       setShowPopupDownload(true);
       setPopupType('url');
@@ -184,6 +268,14 @@ const Home = () => {
           </Alert>
         }
 
+        {status !== -1 &&
+          <Alert className='status' severity={
+            status === 200 ? 'success' : "info"
+          }>
+            {status !== 200 ? `File transfering... (${status} %)` : 'File transfered successfully!'}
+          </Alert>
+        }
+
         <RadioButton value={privacyLevel} onChange={(e) => setPrivacyLevel(e)} />
         <div>
           {!connected && <button className='buttonConnect' onClick={() => connectToSocket()} onLoad={() =>  {
@@ -197,7 +289,7 @@ const Home = () => {
           fileName={filesToDownload}
           text={text}
           url={url}
-          username={userNameSender}
+          username={myUsername}
           popupType={popupType}
           previewUrl={previewUrl}
         />}
@@ -212,10 +304,12 @@ const Home = () => {
               <Device
                 key={device.socketId}
                 device={device}
-                myName={username}
-                handleSendText={(text: string) => handleUpload(mySocket, 'txt', username, device.socketId, undefined, text)}
-                handleFileUpload={(files: File[]) => handleUpload(mySocket, 'file', username, device.socketId, files)}
-                handleUrlUpload={(url: string) => handleUpload(mySocket, 'url', username, device.socketId, undefined, undefined, url)}
+                myName={myUsername}
+                handleSendText={(text: string) => handleUpload(mySocket, 'txt', myUsername, device.socketId, setStatus, undefined, text)}
+                handleFileUpload={(files: File[]) => handleUpload(mySocket, 'file', myUsername, device.socketId, setStatus, files)}
+                handleUrlUpload={(url: string) => handleUpload(mySocket, 'url', myUsername, device.socketId, setStatus, undefined, undefined, url)}
+                status={status}
+                userNameSender={userNameSender}
               />
             ))}
           </div>
@@ -235,8 +329,8 @@ const Home = () => {
           }} />
         </div>
 
-        {username ?
-          <h4>You are known as <span>{username}</span></h4> :
+        {myUsername ?
+          <h4>You are known as <span>{myUsername}</span></h4> :
           <h4>The easiest way to transfer files across devices</h4>}
         <h6>
           {privacyLevel === '3' ?
