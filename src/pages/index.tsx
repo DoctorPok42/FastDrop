@@ -16,7 +16,7 @@ const customConfig: Config = {
 
 const Home = () => {
   const [users, setUsers] = useState([] as any[]);
-  const [username, setUsername] = useState<string>('');
+  const [myUsername, setMyUsername] = useState<string>('');
   const [connected, setConnected] = useState(false);
   const [mySocket, setMySocket] = useState<any>(null);
 
@@ -27,7 +27,7 @@ const Home = () => {
   const incomingFilesRef = useRef<{ [fileId: string]: IncomingFile }>({});
   const [text, setText] = useState<string>('');
   const [url, setUrl] = useState<string>('');
-  const [userNameSender, setUserNameSender] = useState<string>('');
+  const [userNameSender, setUserNameSender] = useState<[string, string]>(['', '']);
 
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
@@ -39,7 +39,7 @@ const Home = () => {
   useEffect(() => {
     if (privacyLevel === '1') {
       mySocket && mySocket.emit('updatePrivacyLevel', {
-        name: username,
+        name: myUsername,
         deviceType: getDeviceType(),
         privacyLevel: privacyLevel,
         location: null,
@@ -48,7 +48,7 @@ const Home = () => {
     if (privacyLevel === '2') {
       askForLocationPermission(
         mySocket,
-        username,
+        myUsername,
         privacyLevel,
         setError,
         setPrivacyLevel,
@@ -57,7 +57,7 @@ const Home = () => {
     }
     if (privacyLevel === '3') {
       mySocket && mySocket.emit('updatePrivacyLevel', {
-        name: username,
+        name: myUsername,
         deviceType: getDeviceType(),
         privacyLevel: privacyLevel,
         location: null,
@@ -68,7 +68,7 @@ const Home = () => {
   const connectToSocket = () => {
     let userName;
     userName = uniqueNamesGenerator(customConfig);
-    setUsername(userName);
+    setMyUsername(userName);
 
     const newSocket = io("https://fastdrop-server.doctorpok.io/", { secure: true, transports: ["websocket"] });
     let userList = [] as any[];
@@ -108,7 +108,7 @@ const Home = () => {
     });
 
     newSocket.on('fileDownloadLarge', async (file: any,  username: string) => {
-      setUserNameSender(username);
+      setUserNameSender([username, myUsername]);
 
       let allFile = [] as any[];
 
@@ -127,7 +127,7 @@ const Home = () => {
     });
 
     newSocket.on('fileDownload', async (file: any, fileName: string, username: string) => {
-      setUserNameSender(username);
+      setUserNameSender([username, myUsername]);
       const putFile = new File([file], fileName);
       setFilesToDownload([
         {
@@ -148,6 +148,7 @@ const Home = () => {
 
     newSocket.on("fileDownloadChunk", (data) => {
       const { fileId, chunk, currentChunk, totalChunks, fileName, username, sender } = data;
+      setUserNameSender([username, myUsername]);
 
       if (!incomingFilesRef.current[fileId]) {
         incomingFilesRef.current[fileId] = {
@@ -172,8 +173,9 @@ const Home = () => {
     });
 
     newSocket.on("fileDownloadChunkStatusAlert", (data) => {
-      const { currentChunk, totalChunks } = data;
+      const { currentChunk, totalChunks, senderUsername } = data;
       setStatus(Math.floor(((currentChunk + 1) / totalChunks) * 100));
+      setUserNameSender([senderUsername, myUsername]);
     });
 
     newSocket.on("fileDownloadEnd", (data) => {
@@ -213,6 +215,9 @@ const Home = () => {
         fileId,
         userToRespond: sender,
       });
+
+      setUserNameSender(['', '']);
+      setFilesToDownload([]);
     });
 
     newSocket.on('fileDownloadEndAlert', (data) => {
@@ -223,14 +228,14 @@ const Home = () => {
     })
 
     newSocket.on('textDownload', async (text: string, username: string) => {
-      setUserNameSender(username);
+      setUserNameSender([username, myUsername]);
       setText(text);
       setShowPopupDownload(true);
       setPopupType('txt');
     });
 
     newSocket.on('urlDownload', async (url: string, username: string) => {
-      setUserNameSender(username);
+      setUserNameSender([username, myUsername]);
       setUrl(url);
       setShowPopupDownload(true);
       setPopupType('url');
@@ -284,7 +289,7 @@ const Home = () => {
           fileName={filesToDownload}
           text={text}
           url={url}
-          username={userNameSender}
+          username={myUsername}
           popupType={popupType}
           previewUrl={previewUrl}
         />}
@@ -299,11 +304,12 @@ const Home = () => {
               <Device
                 key={device.socketId}
                 device={device}
-                myName={username}
-                handleSendText={(text: string) => handleUpload(mySocket, 'txt', username, device.socketId, setStatus, undefined, text)}
-                handleFileUpload={(files: File[]) => handleUpload(mySocket, 'file', username, device.socketId, setStatus, files)}
-                handleUrlUpload={(url: string) => handleUpload(mySocket, 'url', username, device.socketId, setStatus, undefined, undefined, url)}
+                myName={myUsername}
+                handleSendText={(text: string) => handleUpload(mySocket, 'txt', myUsername, device.socketId, setStatus, undefined, text)}
+                handleFileUpload={(files: File[]) => handleUpload(mySocket, 'file', myUsername, device.socketId, setStatus, files)}
+                handleUrlUpload={(url: string) => handleUpload(mySocket, 'url', myUsername, device.socketId, setStatus, undefined, undefined, url)}
                 status={status}
+                userNameSender={userNameSender}
               />
             ))}
           </div>
@@ -323,8 +329,8 @@ const Home = () => {
           }} />
         </div>
 
-        {username ?
-          <h4>You are known as <span>{username}</span></h4> :
+        {myUsername ?
+          <h4>You are known as <span>{myUsername}</span></h4> :
           <h4>The easiest way to transfer files across devices</h4>}
         <h6>
           {privacyLevel === '3' ?

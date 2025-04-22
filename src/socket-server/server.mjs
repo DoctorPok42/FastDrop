@@ -240,6 +240,7 @@ io.on('connection', (socket) => {
     targetSocket.socket.emit('fileDownloadChunkStatusAlert', {
       currentChunk,
       totalChunks,
+      senderUsername: users.find((u) => u.socketId === socket.id).name,
     });
   })
 
