@@ -39,11 +39,12 @@ const Popup = ({
 
     return (
         <div className={styles.popup} style={{
-                visibility: showPopup ? 'visible' : 'hidden',
+          visibility: showPopup ? 'visible' : 'hidden',
+          opacity: showPopup ? '1' : '0',
         }}>
             <div ref={ref} className={styles.popup__content} style={{
-                transform: showPopup ? 'scale(1)' : 'scale(0)',
-                visibility: showPopup ? 'visible' : 'hidden',
+              transform: showPopup ? 'scale(1)' : 'scale(0)',
+              visibility: showPopup ? 'visible' : 'hidden',
             }}>
                 <div className={styles.popup_cont}>
                 <div className={styles.popupLink__close}>

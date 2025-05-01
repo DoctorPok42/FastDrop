@@ -37,10 +37,12 @@ const Device = ({
     ))(({ theme }) => ({
         [`& .${tooltipClasses.tooltip}`]: {
             backgroundColor: 'var(--orange)',
-            color: 'var(--white)',
+            color: 'var(--black-light)',
             boxShadow: theme.shadows[1],
-            fontSize: 13,
+            fontSize: 14,
             fontFamily: 'var(--font)',
+            fontWeight: 600,
+            borderRadius: '1em',
 
         },
         [`& .${tooltipClasses.arrow}`]: {
@@ -73,7 +75,7 @@ const Device = ({
                   title={device.userName}
                   placement="top"
                   TransitionComponent={Zoom}
-                  TransitionProps={{ timeout: 100 }}
+                  TransitionProps={{ timeout: 80 }}
                   arrow
               >
                   <IconButton onClick={() => handleClicked()}>

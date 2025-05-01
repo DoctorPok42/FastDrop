@@ -20,7 +20,7 @@
     border-radius: 20px;
     padding: 20px 3em;
     position: relative;
-    transition: all 0.3s ease-in-out;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 
     .popup_cont {
       width: 100%;

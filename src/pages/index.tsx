@@ -283,9 +283,9 @@ const Home = () => {
           }}>Se connecter</button>}
         </div>
         {showPopupDownload && <PopupDownload
-          acceptFile={() => handleDownloadFile(filesToDownload, setShowPopupDownload, setFilesToDownload)}
-          acceptUrl={(url: string) => handleGetUrl(url, setShowPopupDownload)}
-          decline={() => handleDeclineFile(setShowPopupDownload, setFilesToDownload)}
+          acceptFile={() => handleDownloadFile(filesToDownload, setShowPopupDownload, setFilesToDownload, setUserNameSender)}
+          acceptUrl={(url: string) => handleGetUrl(url, setShowPopupDownload, setUserNameSender, setFilesToDownload)}
+          decline={() => handleDeclineFile(setShowPopupDownload, setFilesToDownload, setUserNameSender)}
           fileName={filesToDownload}
           text={text}
           url={url}

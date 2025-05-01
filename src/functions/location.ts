@@ -1,5 +1,3 @@
-import getDeviceType from "./getDeviceType";
-
 const askForLocationPermission = async (
   mySocket: any,
   username: string,
@@ -9,9 +7,9 @@ const askForLocationPermission = async (
   getDeviceType: any,
 ) => {
   try {
-    await navigator.geolocation.getCurrentPosition(
-      () => {},
-      () => {},
+    navigator.geolocation.getCurrentPosition(
+      () => { },
+      () => { },
       {}
     );
     const position = await new Promise<GeolocationPosition>(
