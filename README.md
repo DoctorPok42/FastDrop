@@ -1,14 +1,25 @@
-<!-- @format -->
-
 <div align="center">
     <img src="public/favicon.ico" width="30%">
 </div>
 
 # Fastdrop
 
-### The easiest way to transfer files across devices
+## The easiest way to transfer files across devices
 
 Fastdrop is a web application that allows users to easily transfer files between devices. It uses a peer-to-peer connection, so no files are ever stored on a server. This makes it a secure and private way to share files.
+
+## Features
+
+- 📁 **Drag and drop** - Users can drag and drop files to transfer
+- 🔒 **Secure** - Files are transferred directly between devices, so no files are ever stored on a server
+- 📦 **Chunked file transfer** - Large files are split into smaller chunks and sent one by one to ensure reliable transfer
+- 🔐 **Privacy levels** - Users can choose to share files with everyone, only close people, or only people on the same network
+- 👥 **Rooms** - Users can create rooms to share files with multiple people at once
+- ⚡ **Fast** - Files are transferred quickly and efficiently
+- 🌐 **Cross-platform** - Works on any device with a web browser
+- 🆓 **Free** - Fastdrop is completely free to use
+- 🛠️ **Open source** - Fastdrop is open source, so anyone can contribute to the project
+- 📱 **Mobile friendly** - Fastdrop is optimized for mobile devices, so users can easily transfer files on the go
 
 ## Installation
 
@@ -46,7 +57,7 @@ node .\src.\socket-server.\server.mjs
 
 ## Usage
 
-1. Go to http://localhost:3000
+1. Go to [http://localhost:3000](http://localhost:3000)
 
 2. Connect a second device
 
