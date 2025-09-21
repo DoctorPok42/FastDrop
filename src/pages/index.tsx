@@ -3,7 +3,7 @@ import Head from 'next/head'
 import Script from 'next/script';
 import io from 'socket.io-client';
 import { Alert } from '@mui/material'
-import { Device, PopupDownload, RadioButton } from '../../Components';
+import { Device, PopupDownload, RadioButton, SelectUsers } from '../../Components';
 import { uniqueNamesGenerator, Config, adjectives, animals } from 'unique-names-generator';
 import { getDeviceType, handleUpload, askForLocationPermission } from '../functions';
 import { handleDownloadFile, handleGetUrl, handleDeclineFile } from '../functions/handle';
@@ -19,6 +19,8 @@ const Home = () => {
   const [myUsername, setMyUsername] = useState<string>('');
   const [connected, setConnected] = useState(false);
   const [mySocket, setMySocket] = useState<any>(null);
+  const [onSelectUser, setOnSelectUser] = useState<boolean>(false);
+  const [isInRoom, setIsInRoom] = useState<boolean>(false);
 
   const [showPopupDownload, setShowPopupDownload] = useState(false);
   const [popupType, setPopupType] = useState<'file' | 'txt' | 'url' | 'none'>('none')
@@ -69,8 +71,14 @@ const Home = () => {
     let userName;
     userName = uniqueNamesGenerator(customConfig);
     setMyUsername(userName);
+    setError(null)
 
-    const newSocket = io("https://fastdrop-server.doctorpok.io/", { secure: true, transports: ["websocket"] });
+    const newSocket = io("https://fastdrop-server.doctorpok.io/", {
+      secure: true,
+      transports: ["websocket"],
+      ackTimeout: 5000,
+      reconnectionDelay: 1000,
+    });
     let userList = [] as any[];
     setMySocket(newSocket);
 
@@ -85,6 +93,23 @@ const Home = () => {
       setConnected(true);
       setUsers([]);
       newSocket.emit('join', user);
+    });
+
+    newSocket.on('connect_error', (err: any) => {
+      setError("Connection error, please try again by refreshing the page.");
+      setConnected(false);
+    });
+
+    newSocket.on('disconnect', () => {
+      setConnected(false);
+      setUsers([]);
+      setIsInRoom(false);
+      setOnSelectUser(false);
+      setError("You have been disconnected. Please refresh the page to reconnect.");
+      setMySocket(null);
+      setMyUsername('');
+      userList = [];
+      incomingFilesRef.current = {};
     });
 
     newSocket.on('updateUsers', (users) => {
@@ -215,9 +240,6 @@ const Home = () => {
         fileId,
         userToRespond: sender,
       });
-
-      setUserNameSender(['', '']);
-      setFilesToDownload([]);
     });
 
     newSocket.on('fileDownloadEndAlert', (data) => {
@@ -240,7 +262,20 @@ const Home = () => {
       setShowPopupDownload(true);
       setPopupType('url');
     });
+
+    newSocket.on("roomCreated", (data) => {
+      setIsInRoom(true);
+      setOnSelectUser(false);
+    });
   };
+
+  const handleCreateRoom = (users: any[]) => {
+    setOnSelectUser(false);
+    setIsInRoom(true);
+    mySocket.emit('createRoom', {
+      users: users,
+    });
+  }
 
   const animation = [1, 2, 3, 4, 5, 6];
 
@@ -276,12 +311,28 @@ const Home = () => {
           </Alert>
         }
 
-        <RadioButton value={privacyLevel} onChange={(e) => setPrivacyLevel(e)} />
-        <div>
-          {!connected && <button className='buttonConnect' onClick={() => connectToSocket()} onLoad={() =>  {
+        {onSelectUser &&
+          <SelectUsers
+          users={users}
+          onCreate={handleCreateRoom}
+          myName={myUsername}
+          onClose={() => setOnSelectUser(false)}
+          />
+        }
+
+        <RadioButton
+          value={privacyLevel}
+          onChange={(e) => setPrivacyLevel(e)}
+          nbOfUsers={users.length}
+          onClick={() => setOnSelectUser(true)}
+          isActive={isInRoom}
+        />
+        <div className='btnConnect'>
+          {(!connected && error) && <button className='buttonConnect' onClick={() => connectToSocket()} onLoad={() =>  {
               console.log('onload')
-          }}>Se connecter</button>}
+          }}>Connect to Fastdrop</button>}
         </div>
+
         {showPopupDownload && <PopupDownload
           acceptFile={() => handleDownloadFile(filesToDownload, setShowPopupDownload, setFilesToDownload, setUserNameSender)}
           acceptUrl={(url: string) => handleGetUrl(url, setShowPopupDownload, setUserNameSender, setFilesToDownload)}
@@ -296,7 +347,7 @@ const Home = () => {
 
         {users.length < 2 ?
           <div className="title">
-            <h2>Open Fastdrop on other devices to send files</h2>
+            <h2>{connected ? "Open Fastdrop on other devices to send files" : error ? "Failed to connect to the server" : "Try to connect to the server..."}</h2>
           </div>
         :
           <div className='devices'>
@@ -316,14 +367,14 @@ const Home = () => {
         }
 
         <div className="animation">
-          <div className='testAnim' style={{
+          {connected && <div className='testAnim' style={{
             opacity: users.length < 2 ? '1' : '0',
           }}>
           {
             animation.map((i) => (
               <span key={i} style={{ ['--i' as any]: i }} />
             ))
-          }</div>
+          }</div>}
           <img src="/favicon.ico" alt="Fastdrop" style={{
             animation: users.length < 2 ? 'animate-logo 2s linear infinite' : 'none',
           }} />

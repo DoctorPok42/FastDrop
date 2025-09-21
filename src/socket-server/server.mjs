@@ -38,6 +38,7 @@ let users = []
 let usersSocket = []
 let filesStorage = []
 const fileChunks = new Map();
+let rooms = new Map();
 
 const isUserNear = (location1, location2) => {
   if ((location1 === null || location1 === undefined) || (location2 === null || location2 === undefined)) {
@@ -51,6 +52,17 @@ const isUserNear = (location1, location2) => {
   );
 
   return distance < distanceThreshold;
+}
+
+const sendToRoomMembers = (targetUserId, sendEvent) => {
+  const userRoom = Array.from(rooms.entries()).find(([roomId, users]) => {
+    return users.some((user) => user.socketId === targetUserId);
+  });
+
+  if (userRoom) {
+    const [roomId] = userRoom;
+    sendEvent(roomId);
+  }
 }
 
 io.on('connection', (socket) => {
@@ -189,6 +201,10 @@ io.on('connection', (socket) => {
     if (targetUser) {
       targetUser.socket.emit('textDownload', text, username);
     }
+
+    sendToRoomMembers(targetUserId, (roomId) => {
+      socket.to(roomId).emit('textDownload', text, username);
+    });
   });
 
   socket.on('urlUpload', (url, targetUserId, username) => {
@@ -198,6 +214,10 @@ io.on('connection', (socket) => {
     if (targetUser) {
       targetUser.socket.emit('urlDownload', url, username);
     }
+
+    sendToRoomMembers(targetUserId, (roomId) => {
+      socket.to(roomId).emit('urlDownload', url, username);
+    });
   });
 
   socket.on("fileChunk", (data) => {
@@ -229,6 +249,18 @@ io.on('connection', (socket) => {
       totalChunks,
       sender: socket.id,
     });
+
+    sendToRoomMembers(targetUser, (roomId) => {
+      socket.to(roomId).emit('fileDownloadChunk', {
+        fileId,
+        chunk,
+        fileName,
+        username,
+        currentChunk,
+        totalChunks,
+        sender: socket.id,
+      });
+    });
   });
 
   socket.on("fileDownloadChunkStatus", (data) => {
@@ -256,6 +288,15 @@ io.on('connection', (socket) => {
       username,
       sender: socket.id,
     });
+
+    sendToRoomMembers(targetUser, (roomId) => {
+      socket.to(roomId).emit('fileDownloadEnd', {
+        fileId,
+        fileName,
+        username,
+        sender: socket.id,
+      });
+    });
   });
 
   socket.on("fileDownloadEnd", (data) => {
@@ -267,6 +308,23 @@ io.on('connection', (socket) => {
     targetSocket.socket.emit('fileDownloadEndAlert', {
       fileId,
       sender: socket.id,
+    });
+  })
+
+  socket.on("createRoom", ({ users }) => {
+    const roomId = `room-${Math.floor(Math.random() * 100000)}`;
+    socket.join(roomId);
+    console.log('Room created:', roomId);
+
+    rooms.set(roomId, users);
+
+    users.map((user) => {
+      const targetSocket = usersSocket.find((s) => s.sokedId === user.socketId);
+      if (targetSocket) {
+        rooms.set(roomId, users);
+        targetSocket.socket.join(roomId);
+        targetSocket.socket.emit('roomCreated', roomId);
+      }
     });
   })
 });
