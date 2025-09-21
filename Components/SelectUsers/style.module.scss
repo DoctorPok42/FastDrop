@@ -1,0 +1,131 @@
+.SelectUser_container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(5px);
+  opacity: 1;
+  pointer-events: none;
+  transition: all 0.3s ease-in-out;
+
+  .SelectUser {
+    width: 400px;
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    background-color: rgba(56, 182, 255, 0.8);
+    border: 3px solid var(--blue);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    pointer-events: auto;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+    .SelectUser_title {
+      width: 100%;
+      margin: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      h2 {
+        margin: 0;
+        font-size: 24px;
+      }
+
+      .SelectUser_close {
+        width: 20px;
+        cursor: pointer;
+        color: #333;
+        transition: color 0.3s;
+
+        &:hover {
+          color: #000;
+        }
+      }
+    }
+
+    .SelectUser_list {
+      width: 100%;
+      overflow-y: auto;
+      border-radius: 5px;
+
+      .SelectUser_item {
+        display: flex;
+        gap: 1em;
+        align-items: center;
+        padding: 0.2em 1em;
+        border-bottom: #000000 1px solid;
+        transition: all 0.2s ease-in-out;
+        color: var(--white);
+        font-size: 1.2rem;
+        font-weight: 100;
+        background-color: rgba(56, 182, 255, 0.8);
+        cursor: pointer;
+
+        input[type="checkbox"] {
+          width: 15px;
+          height: 15px;
+          cursor: pointer;
+          border: none;
+          border-radius: 12px !important;
+          outline: none;
+        }
+
+        .SelectUser_label {
+          font-size: 1.2rem;
+          font-weight: 100;
+          color: var(--white);
+          text-decoration: none;
+          transition: all 0.2s ease-in-out;
+          cursor: pointer;
+        }
+
+        .SelectUser_label:hover {
+          opacity: 0.7;
+
+          text-decoration: underline;
+        }
+      }
+
+      .SelectUser_item:nth-last-child(-n + 2) {
+        border-bottom: none !important;
+        border-radius: 0 0 5px 5px;
+        margin-bottom: 1em;
+      }
+    }
+
+    .SelectUser_buttons {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding-bottom: 0.3em;
+
+      button {
+        margin: auto;
+        border: none;
+        border-radius: 8px;
+        padding: 0.4em 1em;
+        color: var(--white);
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 1em;
+        transition: all 0.2s ease-in-out;
+      }
+
+      // si bouton hover et bouton pas disabled
+      button:hover {
+        box-shadow: 0 0 0 0.3em rgba(255, 189, 89, 0.5) !important;
+      }
+    }
+  }
+}

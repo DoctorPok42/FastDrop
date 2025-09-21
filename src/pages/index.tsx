@@ -3,7 +3,7 @@ import Head from 'next/head'
 import Script from 'next/script';
 import io from 'socket.io-client';
 import { Alert } from '@mui/material'
-import { Device, PopupDownload, RadioButton } from '../../Components';
+import { Device, PopupDownload, RadioButton, SelectUsers } from '../../Components';
 import { uniqueNamesGenerator, Config, adjectives, animals } from 'unique-names-generator';
 import { getDeviceType, handleUpload, askForLocationPermission } from '../functions';
 import { handleDownloadFile, handleGetUrl, handleDeclineFile } from '../functions/handle';
@@ -19,6 +19,8 @@ const Home = () => {
   const [myUsername, setMyUsername] = useState<string>('');
   const [connected, setConnected] = useState(false);
   const [mySocket, setMySocket] = useState<any>(null);
+  const [onSelectUser, setOnSelectUser] = useState<boolean>(false);
+  const [isInRoom, setIsInRoom] = useState<boolean>(false);
 
   const [showPopupDownload, setShowPopupDownload] = useState(false);
   const [popupType, setPopupType] = useState<'file' | 'txt' | 'url' | 'none'>('none')
@@ -215,9 +217,6 @@ const Home = () => {
         fileId,
         userToRespond: sender,
       });
-
-      setUserNameSender(['', '']);
-      setFilesToDownload([]);
     });
 
     newSocket.on('fileDownloadEndAlert', (data) => {
@@ -240,7 +239,20 @@ const Home = () => {
       setShowPopupDownload(true);
       setPopupType('url');
     });
+
+    newSocket.on("roomCreated", (data) => {
+      setIsInRoom(true);
+      setOnSelectUser(false);
+    });
   };
+
+  const handleCreateRoom = (users: any[]) => {
+    setOnSelectUser(false);
+    setIsInRoom(true);
+    mySocket.emit('createRoom', {
+      users: users,
+    });
+  }
 
   const animation = [1, 2, 3, 4, 5, 6];
 
