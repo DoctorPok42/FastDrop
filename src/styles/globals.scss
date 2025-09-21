@@ -72,22 +72,26 @@ body {
     z-index: 3;
   }
 
-  .buttonConnect {
-    background-color: var(--blue);
-    border: none;
-    border-radius: 5px;
-    padding: 0.4em 1em;
-    color: var(--white);
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    margin-bottom: 2em;
-    transition: all 0.2s ease-in-out;
-    z-index: 10;
-  }
+  .btnConnect {
+    margin-top: 2em;
+    z-index: 2;
 
-  .buttonConnect:hover {
-    box-shadow: 0 0 0 0.3em rgba(56, 182, 255, 0.5);
+    .buttonConnect {
+      background-color: var(--blue);
+      border: none;
+      border-radius: 5px;
+      padding: 0.4em 1em;
+      color: var(--white);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 2em;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .buttonConnect:hover {
+      box-shadow: 0 0 0 0.3em rgba(56, 182, 255, 0.5);
+    }
   }
 
   .title {
@@ -135,6 +139,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 0;
 
     span {
       opacity: 0;
