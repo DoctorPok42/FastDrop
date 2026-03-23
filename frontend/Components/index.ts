@@ -6,3 +6,4 @@ export { default as RadioButton } from "./RadioButton";
 export { default as SelectUsers } from "./SelectUsers";
 export { default as TextInterface } from "./TextInterface";
 export { default as UserList } from "./UserList";
+export { default as TransferRequest } from "./TransferRequest";

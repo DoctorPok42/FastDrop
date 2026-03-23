@@ -3,7 +3,7 @@ import Head from 'next/head'
 import Script from 'next/script';
 import io from 'socket.io-client';
 import { Alert } from '@mui/material'
-import { Device, PopupDownload, RadioButton, SelectUsers } from '../../Components';
+import { Device, PopupDownload, RadioButton, SelectUsers, TransferRequest } from '../../Components';
 import { uniqueNamesGenerator, Config, adjectives, animals } from 'unique-names-generator';
 import { getDeviceType, handleUpload, askForLocationPermission } from '../functions';
 import { handleDownloadFile, handleGetUrl, handleDeclineFile } from '../functions/handle';
@@ -38,9 +38,12 @@ const Home = () => {
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<number>(-1);
 
+  const [pendingTransfers, setPendingTransfers] = useState<any[]>([]);
+  const pendingTransfersRef = useRef<{ [transferId: string]: any }>({});
+
   useEffect(() => {
     if (privacyLevel === '1') {
-      mySocket && mySocket.emit('updatePrivacyLevel', {
+      mySocket?.emit('updatePrivacyLevel', {
         name: myUsername,
         deviceType: getDeviceType(),
         privacyLevel: privacyLevel,
@@ -58,7 +61,7 @@ const Home = () => {
       )
     }
     if (privacyLevel === '3') {
-      mySocket && mySocket.emit('updatePrivacyLevel', {
+      mySocket?.emit('updatePrivacyLevel', {
         name: myUsername,
         deviceType: getDeviceType(),
         privacyLevel: privacyLevel,
@@ -242,7 +245,7 @@ const Home = () => {
       });
     });
 
-    newSocket.on('fileDownloadEndAlert', (data) => {
+    newSocket.on('fileDownloadEndAlert', () => {
       setStatus(200);
       setTimeout(() => {
         setStatus(-1);
@@ -263,9 +266,28 @@ const Home = () => {
       setPopupType('url');
     });
 
-    newSocket.on("roomCreated", (data) => {
+    newSocket.on("roomCreated", () => {
       setIsInRoom(true);
       setOnSelectUser(false);
+    });
+
+    newSocket.on('receiveTransferRequest', (data: any) => {
+      const { transferId, senderName, senderSocketId, transferType, fileNames } = data;
+      const newTransfer = {
+        transferId,
+        senderName,
+        senderSocketId,
+        transferType,
+        fileNames,
+        timestamp: Date.now(),
+      };
+      pendingTransfersRef.current[transferId] = newTransfer;
+      setPendingTransfers([...Object.values(pendingTransfersRef.current)]);
+    });
+
+    newSocket.on('receiveTransferResponse', (data: any) => {
+      const { transferId, accepted } = data;
+      console.log(`Transfer ${transferId} response: ${accepted ? 'accepted' : 'declined'}`);
     });
   };
 
@@ -277,7 +299,20 @@ const Home = () => {
     });
   }
 
-  const animation = [1, 2, 3, 4, 5, 6];
+  const handleTransferResponse = (transferId: string, accepted: boolean) => {
+    if (mySocket && pendingTransfersRef.current[transferId]) {
+      const transfer = pendingTransfersRef.current[transferId];
+      mySocket.emit('transferResponse', {
+        transferId,
+        accepted,
+        senderSocketId: transfer.senderSocketId,
+      });
+      delete pendingTransfersRef.current[transferId];
+      setPendingTransfers(Object.values(pendingTransfersRef.current));
+    }
+  };
+
+  const animation = [1, 2, 3, 4, 5];
 
   return (
     <>
@@ -343,6 +378,12 @@ const Home = () => {
           username={myUsername}
           popupType={popupType}
           previewUrl={previewUrl}
+        />}
+
+        {pendingTransfers.length > 0 && <TransferRequest
+          transfers={pendingTransfers}
+          onAccept={(transferId: string) => handleTransferResponse(transferId, true)}
+          onDecline={(transferId: string) => handleTransferResponse(transferId, false)}
         />}
 
         {users.length < 2 ?

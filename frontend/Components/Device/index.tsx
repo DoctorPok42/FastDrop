@@ -75,7 +75,7 @@ const Device = ({
                   title={device.userName}
                   placement="top"
                   TransitionComponent={Zoom}
-                  TransitionProps={{ timeout: 80 }}
+                  TransitionProps={{ timeout: 70 }}
                   arrow
               >
                   <IconButton onClick={() => handleClicked()}>

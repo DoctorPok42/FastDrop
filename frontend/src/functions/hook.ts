@@ -100,6 +100,45 @@ const sendUrl = (
   });
 };
 
+const requestTransfer = (
+  socket: any,
+  transferId: string,
+  targetUserIds: string[],
+  transferType: "file" | "txt" | "url",
+  username: string,
+  fileNames: string[] = []
+): Promise<boolean> => {
+  return new Promise((resolve) => {
+    let responded = false;
+
+    const handleResponse = (data: any) => {
+      if (data.transferId === transferId) {
+        responded = true;
+        socket.off("receiveTransferResponse", handleResponse);
+        resolve(data.accepted === true);
+      }
+    };
+
+    socket.on("receiveTransferResponse", handleResponse);
+
+    socket.emit("transferRequest", {
+      transferId,
+      senderName: username,
+      targetUserIds,
+      transferType,
+      fileNames,
+    });
+
+    // Cleanup timeout
+    setTimeout(() => {
+      if (!responded) {
+        socket.off("receiveTransferResponse", handleResponse);
+        resolve(false);
+      }
+    }, 30000);
+  });
+};
+
 const handleUpload = async (
   socket: any,
   type: "file" | "txt" | "url" | "none" = "none",
@@ -113,6 +152,23 @@ const handleUpload = async (
   if (type === "none") return;
 
   if (targetUser) {
+    const transferId = `${username}-${targetUser}-${Date.now()}`;
+    const fileNames = type === "file" && file ? file.map(f => f.name) : [];
+
+    const accepted = await requestTransfer(
+      socket,
+      transferId,
+      [targetUser],
+      type === "file" ? "file" : type === "txt" ? "txt" : "url",
+      username,
+      fileNames
+    );
+
+    if (!accepted) {
+      console.log("Transfer declined by recipient");
+      return;
+    }
+
     switch (type) {
       case "file":
         if (file) {

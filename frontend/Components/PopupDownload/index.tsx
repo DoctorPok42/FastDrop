@@ -28,7 +28,8 @@ const PopupDownload = ({
             <div className={styles.popupContainer}>
                 <div className={styles.popupContent}>
                     <div className={styles.popupTitle}>
-                        <h1>User <span>{username}</span> wants to send you a {
+                      {/* user already accepted the transfer */}
+                        <h1>User <span>{username}</span> is sending you a {
                             popupType === 'file' ? 'file' :
                                 popupType === 'txt' ? 'text' :
                                     popupType === 'url' ? 'link' : ''
@@ -60,7 +61,7 @@ const PopupDownload = ({
                     {popupType !== "none" && <div className={styles.popupButtons}>
                         <button className={styles.btnDecline} onClick={() => decline()}>Decline</button>
 
-                        {popupType === "file" && <button className={styles.btnAccept} onClick={() => acceptFile(fileName)}>Accept</button>}
+                        {popupType === "file" && <button className={styles.btnAccept} onClick={() => acceptFile(fileName)}>Download</button>}
 
                         {popupType === "txt" && <button className={styles.btnAccept} onClick={(e) => {
                             e.preventDefault();
