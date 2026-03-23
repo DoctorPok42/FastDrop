@@ -1,5 +1,5 @@
 <div align="center">
-    <img src="public/favicon.ico" width="30%">
+    <img src="frontend/public/favicon.ico" width="30%">
 </div>
 
 # Fastdrop
@@ -10,11 +10,12 @@ Fastdrop is a web application that allows users to easily transfer files between
 
 ## Features
 
-- 📁 **Drag and drop** - Users can drag and drop files to transfer
-- 🔒 **Secure** - Files are transferred directly between devices, so no files are ever stored on a server
-- 📦 **Chunked file transfer** - Large files are split into smaller chunks and sent one by one to ensure reliable transfer
 - 🔐 **Privacy levels** - Users can choose to share files with everyone, only close people, or only people on the same network
 - 👥 **Rooms** - Users can create rooms to share files with multiple people at once
+- 📁 **Drag and drop** - Users can drag and drop files to transfer
+- ✅ **Transfer confirmation** - Users must confirm the transfer before files are sent to ensure that they are not sent to the wrong device
+- 🔒 **Secure** - Files are transferred directly between devices, so no files are ever stored on a server
+- 📦 **Chunked file transfer** - Large files are split into smaller chunks and sent one by one to ensure reliable transfer
 - ⚡ **Fast** - Files are transferred quickly and efficiently
 - 🌐 **Cross-platform** - Works on any device with a web browser
 - 🆓 **Free** - Fastdrop is completely free to use
@@ -25,35 +26,34 @@ Fastdrop is a web application that allows users to easily transfer files between
 
 1. Clone the repository
 
-```bash
-git clone git@github.com:DoctorPok42/FastDrop.git
-```
+    ```bash
+    git clone git@github.com:DoctorPok42/FastDrop.git
+    ```
 
 2. Install dependencies
 
-```bash
-npm install
-```
+    ```bash
+    cd frontend && npm install && cd ../server && npm install
+    ```
 
 3. Add .env file
 
-```bash
-touch .env
-```
+    ```bash
+    touch .env
+    ```
 
 4. Add the following variables to the .env file
 
-```bash
-URL_SERVER=http://localhost:3001
-```
+    ```bash
+    URL_SERVER=http://localhost:3001
+    ```
 
 5. Run the server and client in development mode with hot module replacement
 
-```bash
-npm run dev
-
-node .\src.\socket-server.\server.mjs
-```
+    ```bash
+    cd frontend && npm run dev
+    cd server && npm run build && npm start
+    ```
 
 ## Usage
 
@@ -81,7 +81,7 @@ node .\src.\socket-server.\server.mjs
 - **pages** - Contains all the pages used in the project
 - **public** - Contains all the static files used in the project
 - **styles** - Contains all the styles used in the project
-- **socket-server** - Contains the socket server used in the project
+- **server** - Contains the server code
 
 ## License
 
