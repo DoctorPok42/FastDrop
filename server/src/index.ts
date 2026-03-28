@@ -23,7 +23,7 @@ const io = new Server(httpServer, {
   },
 });
 
-const port = 3001;
+const port = 8000;
 
 io.on('connection', (socket) => {
   console.log('Nouvelle connexion :', socket.id);

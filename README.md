@@ -39,7 +39,7 @@ Fastdrop is a web application that allows users to easily transfer files between
 3. Add .env file
 
     ```bash
-    touch .env
+    cd frontend && touch .env
     ```
 
 4. Add the following variables to the .env file

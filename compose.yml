@@ -1,0 +1,16 @@
+services:
+  frontend:
+    build: doctorpok/fastdrop:frontend-latest
+    restart: unless-stopped
+    container_name: fastdrop-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+  backend:
+    build: doctorpok/fastdrop:backend-latest
+    restart: unless-stopped
+    container_name: fastdrop-backend
+    ports:
+      - "8000:8000"
