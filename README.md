@@ -4,6 +4,9 @@
 
 # Fastdrop
 
+![Frontend Average Response Time](https://uptime.doctorpok.io/api/badge/10/avg-response)
+![Backend Average Response Time](https://uptime.doctorpok.io/api/badge/18/uptime)
+
 ## The easiest way to transfer files across devices
 
 Fastdrop is a web application that allows users to easily transfer files between devices. It uses a peer-to-peer connection, so no files are ever stored on a server. This makes it a secure and private way to share files.
@@ -21,6 +24,14 @@ Fastdrop is a web application that allows users to easily transfer files between
 - 🆓 **Free** - Fastdrop is completely free to use
 - 🛠️ **Open source** - Fastdrop is open source, so anyone can contribute to the project
 - 📱 **Mobile friendly** - Fastdrop is optimized for mobile devices, so users can easily transfer files on the go
+- 🚀 **Docker** - Fastdrop can be easily deployed using Docker for a hassle-free setup
+
+## Docker
+
+```dockerfile
+docker run -d -p 3000:3000 --name fastdrop-frontend doctorpok/fastdrop:frontend-latest
+docker run -d -p 8000:8000 --name fastdrop-backend doctorpok/fastdrop:backend-latest
+```
 
 ## Installation
 
