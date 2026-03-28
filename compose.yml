@@ -1,6 +1,6 @@
 services:
   frontend:
-    build: doctorpok/fastdrop:frontend-latest
+    image: doctorpok/fastdrop:frontend-latest
     restart: unless-stopped
     container_name: fastdrop-frontend
     ports:
@@ -9,7 +9,7 @@ services:
       - backend
 
   backend:
-    build: doctorpok/fastdrop:backend-latest
+    image: doctorpok/fastdrop:backend-latest
     restart: unless-stopped
     container_name: fastdrop-backend
     ports:
