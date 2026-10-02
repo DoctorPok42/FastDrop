@@ -1,6 +1,5 @@
-<div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
-    <img src="frontend/public/logo-mark.svg" width="7%">
-    <span style="font-size: 24px; font-weight: bold; font-style: italic;">Fastdrop</span>
+<div align="center">
+    <img src="frontend/public/logo-mark.svg">
 </div>
 
 # Fastdrop
