@@ -28,6 +28,33 @@ const port = 8000;
 io.on('connection', (socket) => {
   console.log('Nouvelle connexion :', socket.id);
 
+  const websocket = (socket.conn.transport as unknown as {
+    socket: {
+      on: (event: string, listener: () => void) => void;
+      off: (event: string, listener: () => void) => void;
+      ping: () => void;
+    }
+  }).socket;
+  let pingStartedAt: number | null = null;
+
+  const handlePong = () => {
+    if (pingStartedAt === null) return;
+
+    socket.emit('wssPing', Date.now() - pingStartedAt);
+    pingStartedAt = null;
+  };
+
+  const pingInterval = setInterval(() => {
+    pingStartedAt = Date.now();
+    websocket.ping();
+  }, 1000);
+
+  websocket.on('pong', handlePong);
+  socket.once('disconnect', () => {
+    clearInterval(pingInterval);
+    websocket.off('pong', handlePong);
+  });
+
   registerEvents(io, socket);
 });
 

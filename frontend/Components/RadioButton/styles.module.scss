@@ -1,18 +1,10 @@
 .radioButton {
-  position: fixed;
-  width: 100vw;
-  height: 98vh;
   display: flex;
   justify-content: flex-end;
-  align-items: flex-start;
-  margin-top: 1em;
-  margin-right: 2em;
-  z-index: 2;
+  align-items: center;
 
   .roomButton {
-    width: 2em;
-    height: 4em;
-    margin-right: 3em;
+    margin: auto 12px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -30,24 +22,25 @@
   }
 
   .radioList {
-    background-color: var(--grey-dark);
-    border-radius: 50px;
     display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    cursor: pointer;
-    padding: 0;
+    padding: 4px;
+    gap: 2px;
+    background: var(--surface);
+    border: 1px solid var(--divider);
+    border-radius: 999px;
 
     .itemList,
     .itemListActive {
-      padding: 0.2em 0.55em;
-      border-radius: 50px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      border: 0;
+      cursor: pointer;
+      padding: 4px 14px;
+      border-radius: 999px;
+      font-family: var(--font-heading);
+      font-size: 13px;
+      font-weight: 600;
+      background: transparent;
+      color: var(--color-on-ink-25);
       transition: all 0.2s ease-in-out;
-      color: var(--white);
-      margin: 0 0.15em;
 
       .icon {
         width: 1em;
@@ -57,13 +50,8 @@
     }
 
     .itemListActive {
-      background-color: var(--blue);
-      box-shadow: 0 0 0 0.1em var(--blue);
-      transform: scale(1.1);
-
-      .icon {
-        transform: scale(1.2);
-      }
+      background-color: var(--color-text);
+      color: var(--color-bg) !important;
     }
   }
 }

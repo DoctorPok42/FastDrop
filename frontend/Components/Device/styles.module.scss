@@ -1,15 +1,17 @@
 .device {
-  width: 5rem;
-  height: 5rem;
-  background-color: var(--blue);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  transition: all 0.15s ease-in-out;
-  margin: 0 1rem;
+  all: unset;
+  box-sizing: border-box;
   cursor: pointer;
   position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding: 20px;
+  border-radius: 18px;
+  background-color: var(--color-surface);
+  transition: transform .18s ease, box-shadow .18s ease, background .25s;
+  animation: fd-rise .45s ease-out both;
 
   .progress {
     position: absolute;
@@ -17,21 +19,53 @@
     left: 0;
   }
 
-  .device__icon {
-    width: 100%;
+  .device__header {
     display: flex;
-    align-items: center;
-    margin: 0;
-    padding: 0;
-    justify-content: center;
+    align-items: flex-start;
+    justify-content: space-between;
 
-    .icon {
-      width: 50%;
-      margin: 0;
-      padding: 0;
-      color: var(--white);
+    .device__icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+
+      background-color: var(--color-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .icon {
+        width: 50%;
+        margin: 0;
+        padding: 0;
+        color: var(--white);
+      }
     }
   }
+
+  .device__body {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    .device__name {
+      font-weight: 800;
+      font-stretch: 110%;
+      font-size: 22px;
+      letter-spacing: -0.02em;
+    }
+
+    .device__type {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--color-text-secondary);
+    }
+  }
+}
+
+.device:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 30px -18px rgba(12, 13, 15, .45);
 }
 
 @property --progress-value {
