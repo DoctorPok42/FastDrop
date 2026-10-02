@@ -1,8 +1,6 @@
 export const handleDownloadFile = (
   filesToDownload: any[],
-  setShowPopupDownload: (showPopupDownload: boolean) => void,
-  setFilesToDownload: (filesToDownload: any) => void,
-  setUserNameSender: (userNameSender: [string, string]) => void
+  onComplete?: () => void
 ) => {
   if (filesToDownload !== null) {
     filesToDownload.forEach((file) => {
@@ -13,35 +11,10 @@ export const handleDownloadFile = (
         link.setAttribute("download", file.fileName);
         document.body.appendChild(link);
         link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
       }
     });
-    setShowPopupDownload(false);
-    setUserNameSender(["", ""]);
-    setFilesToDownload([]);
   }
-};
-
-export const handleGetUrl = (
-  url: string,
-  setShowPopupDownload: (showPopupDownload: boolean) => void,
-  setUserNameSender: (userNameSender: [string, string]) => void,
-  setFilesToDownload: (filesToDownload: any) => void
-) => {
-  const link = document.createElement("a");
-  link.href = url;
-  link.target = "_blank";
-  link.click();
-  setShowPopupDownload(false);
-  setUserNameSender(["", ""]);
-  setFilesToDownload([]);
-};
-
-export const handleDeclineFile = (
-  setShowPopupDownload: (showPopupDownload: boolean) => void,
-  setFilesToDownload: (filesToDownload: any) => void,
-  setUserNameSender: (userNameSender: [string, string]) => void
-) => {
-  setShowPopupDownload(false);
-  setUserNameSender(["", ""]);
-  setFilesToDownload([]);
+  onComplete?.();
 };
