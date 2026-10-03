@@ -52,7 +52,7 @@ const TransferRequest: React.FC<TransferRequestProps> = ({
 
   return (
     <div className={styles.overlay}>
-      <div ref={ref} className={`${styles.modal} bg-inverse text-inverse-text`}>
+      <div ref={ref} className={`${styles.modal} bg-inverse text-inverse-text lg:w-125 w-full lg:translate-y-0 translate-y-7`}>
         <div className={styles.header}>
           <span></span>
           Incoming Transfer
