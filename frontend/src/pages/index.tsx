@@ -412,7 +412,7 @@ const Home = () => {
 
           <div className='gap-4 template-grid'>
             {users.length < 2 ?
-              <div className='relative overflow-hidden col-span-10 flex flex-col items-center text-center border-dashed border border-neutral-400 p-[clamp(36px,6vw,72px)_24px] rounded-[22px]'>
+              <div className='relative lg:col-span-10 overflow-hidden flex flex-col items-center text-center border-dashed border border-neutral-400 p-[clamp(36px,6vw,72px)_24px] rounded-[22px]'>
                 <SpeedStreaks />
                 <span className='flex items-center justify-center gap-2 uppercase font-mono text-[12px] text-text-2 tracking-widest'>
                   <span className='w-1.75 h-1.75 rounded-full bg-text'></span>
