@@ -17,7 +17,6 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  width: 500px;
   box-shadow: 0 30px 60px -24px var(--shadow);
   animation: slideIn 0.3s ease forwards;
 }
@@ -49,7 +48,7 @@
     height: 7px;
     border-radius: 50%;
     background: var(--inv-accent);
-    animation: fd-pulse 1s infinite;
+    animation: var(--fd-pulse) 1s ease-in-out infinite;
   }
 }
 
@@ -138,28 +137,6 @@
 
     &:hover {
       background: #A6D22B;
-    }
-  }
-}
-
-@media (max-width: 768px) {
-  .modal {
-    padding: 1.5rem;
-  }
-
-  .header h2 {
-    font-size: 1.2rem;
-  }
-
-  .content p {
-    font-size: 0.9rem;
-  }
-
-  .buttons {
-    flex-direction: column;
-
-    button {
-      width: 100%;
     }
   }
 }

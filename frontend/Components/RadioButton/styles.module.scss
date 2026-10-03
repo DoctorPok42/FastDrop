@@ -55,3 +55,25 @@
     }
   }
 }
+
+@media (max-width: 639px) {
+  .radioButton {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    width: calc(100vw - 32px);
+
+    .radioList {
+      width: 100%;
+      justify-content: space-between;
+
+      .itemList,
+      .itemListActive {
+        width: 100%;
+        text-align: center;
+        padding: 8px 0px;
+        font-size: 15px;
+      }
+    }
+  }
+}

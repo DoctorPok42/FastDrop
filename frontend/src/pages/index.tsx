@@ -363,7 +363,7 @@ const Home = () => {
         }} />
 
 
-        <section className='flex flex-wrap items-end justify-between gap-8 py-10'>
+        <section className='flex flex-wrap items-end justify-between gap-8 py-10 lg:px-0 px-4'>
           <div className='flex-1 basis-105 min-w-0'>
             <h1 className='relative m-0 font-black italic font-stretch-125% text-[clamp(46px,8vw,112px)] leading-[0.9] tracking-[-0.045em] text-balance text-text'>
               Drop it.
@@ -399,27 +399,27 @@ const Home = () => {
         </section>
 
         {/* Nearby Users */}
-        <section className='flex flex-col gap-5 pb-5'>
+        <section className='flex flex-col gap-5 pb-5 lg:px-0 px-4'>
           <div className='flex items-baseline justify-between gap-3 pb-3 border-b-2 border-divider-strong'>
             <h2 className='m-0 font-extrabold font-stretch-125% text-[clamp(22px,2.4vw,28px)] tracking-[-0.02em]'>
               Nearby devices
             </h2>
 
-            <span className='text-[13px] text-neutral-700 font-mono'>
-              {Math.max(0, users.length - 1)} online {users.length < 2 ? "" : "- tap one to send"}
+            <span className='flex gap-2 text-[13px] text-neutral-700 font-mono'>
+              {Math.max(0, users.length - 1)} online <span className='lg:flex hidden'>{users.length < 2 ? "" : "- tap one to send"}</span>
             </span>
           </div>
 
           <div className='gap-4 template-grid'>
             {users.length < 2 ?
-              <div className='relative overflow-hidden col-span-10 flex flex-col items-center text-center border-dashed border border-neutral-400 p-[clamp(36px,6vw,72px)_24px] rounded-[22px]'>
+              <div className='relative overflow-hidden flex flex-col items-center text-center border-dashed border border-neutral-400 p-[clamp(36px,6vw,72px)_24px] rounded-[22px]'>
                 <SpeedStreaks />
                 <span className='flex items-center justify-center gap-2 uppercase font-mono text-[12px] text-text-2 tracking-widest'>
                   <span className='w-1.75 h-1.75 rounded-full bg-text'></span>
                   scanning
                 </span>
 
-                <p className='relative italic m-0 font-extrabold font-stretch-110% text-[clamp(24px,3.4vw,38px)] tracking-[-0.03em] leading-12 mb-4 max-w-160 text-balance'>
+                <p className='relative italic m-0 font-extrabold font-stretch-110% text-[clamp(24px,3.4vw,38px)] tracking-[-0.03em] lg:leading-12 mb-4 max-w-160 text-balance'>
                   Open Fastdrop on other devices to start sending
                 </p>
 
