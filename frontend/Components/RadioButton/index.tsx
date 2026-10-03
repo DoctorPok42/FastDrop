@@ -18,11 +18,11 @@ const RadioButton = ({
   onClick,
   isActive,
 }: RadioButtonProps) => {
-  const listTab = ["Everyone", "Nearby", "Same Network"];
+  const listTab = ["Everyone", "Nearby", "Network"];
 
   return (
     <div className={styles.radioButton}>
-      {nbOfUsers > 2 && <div className={styles.roomButton}>
+      {nbOfUsers > 2 && <div className={`${styles.roomButton} lg:flex hidden`}>
         <FontAwesomeIcon icon={faUsersRectangle} className={styles.icon} onClick={onClick} style={{
           color: isActive ? 'var(--accent) !important' : 'var(--white) !important',
         }} />

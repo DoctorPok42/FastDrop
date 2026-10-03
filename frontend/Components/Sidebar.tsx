@@ -50,8 +50,8 @@ const SideBar = ({
   const isDisabled = selectedOption === "File" && files.length === 0 || selectedOption === "Text" && text.trim() === "" || selectedOption === "Link" && url.trim() === "";
 
   return (
-    <div className={`fixed inset-0 bg-[rgba(12,13,15,.32)] z-50 justify-end transition-all duration-150 ${showPopup ? 'flex' : 'hidden'}`} onClick={onClose}>
-      <div className="sidebar w-[min(460px,100%)] h-full bg-bg flex flex-col" onClick={(e) => e.stopPropagation()}>
+    <div className={`fixed inset-0 bg-[rgba(12,13,15,.32)] z-50 lg:justify-end transition-all duration-150 ${showPopup ? 'flex' : 'hidden'}`} onClick={onClose}>
+      <div className="sidebar w-[min(460px,100%)] lg:h-full bg-bg flex flex-col" onClick={(e) => e.stopPropagation()}>
         <div className="z-2 p-6 flex flex-col gap-1.5 bg-inverse text-neutral-100">
           <div className="flex justify-between items-center">
             <span className="uppercase font-mono text-[12px] text-neutral-500 tracking-[0.08em]">send to</span>
